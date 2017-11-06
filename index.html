@@ -1,11 +1,51 @@
----
-title: My Blog
----
-
-{{ page.title }}
-
-{% for post in site.posts %}
-
-{{ post.date|date_to_string }} <a href='{{ site.baseurl }}{{ post.url }}'>{{ post.title }}</a>
-
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <video id="video" autoplay style="width:480px;height:320px"></video>
+    <div><button id="capture">拍照</button></div>
+    <canvas id="canvas" width="480" height="320"></canvas>
+    <script>
+//        if(navigator.mediaDevices.getUserMedia||navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia){
+//            alert("支持");
+//
+//        }else{
+//            alert("您的浏览器不支持");
+//        }
+        function getUserMedia(constraints,success,error){
+            if(navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+            }else if (navigator.webkitGetUserMedia){
+                navigator.webkitGetUserMedia(constraints,success,error);
+            }else if(navigator.getUserMedia){
+                navigator.getUserMedia(constraints,success,error);
+            }else if(navigator.mozGetUserMedia){
+                navigator.mozGetUserMedia(constraints,success,error);
+            }
+        }
+        var video=document.getElementById("video");
+        var canvas=document.getElementById("canvas");
+        var context=canvas.getContext("2d");
+        function success(stream){
+            var CompatibleURL=window.URL||window.webkitURL
+            video.src=CompatibleURL.createObjectURL(stream);
+            video.play();
+        }
+        function error(error){
+            console.log("访问用户媒体失败：",error.name,error.message);
+        }
+        if(navigator.mediaDevices.getUserMedia||navigator.getUserMedia
+           ||navigator.webkitUserMedia||navigator.mozGetUserMedia){
+            getUserMedia({video:{width:1000,height:500}},success,error);
+        }else{
+            alert("您的浏览器不支持访问用户媒体设备");
+        }
+        document.getElementById("capture").addEventListener("click",function(){
+            context.drawImage(video,0,0,100,50);
+        });
+    </script>
+</body>
+</html>
